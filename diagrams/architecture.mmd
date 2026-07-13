@@ -1,0 +1,13 @@
+flowchart LR
+  apps[Stripe Applications] --> oltp[(OLTP Database)]
+  oltp --> cdc[Change Data Capture]
+  cdc --> kafka[Kafka Streaming Platform]
+  kafka --> nosql[(NoSQL Store)]
+  kafka --> lake[(Data Lake)]
+  kafka --> warehouse[(OLAP Data Warehouse)]
+  lake --> warehouse
+  warehouse --> bi[BI and Reporting]
+  warehouse --> compliance[Compliance Reporting]
+  nosql --> ml[Machine Learning Services]
+  warehouse --> ml
+  ml --> fraud[Real-Time Fraud Detection]

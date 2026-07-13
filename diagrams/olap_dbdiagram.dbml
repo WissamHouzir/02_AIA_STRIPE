@@ -1,0 +1,75 @@
+Table dim_date {
+  date_key int [pk]
+  full_date date
+  day int
+  month int
+  quarter int
+  year int
+}
+
+Table dim_customer {
+  customer_key int [pk, increment]
+  customer_id int
+  segment varchar
+  country_code varchar(2)
+}
+
+Table dim_merchant {
+  merchant_key int [pk, increment]
+  merchant_id int
+  merchant_name varchar
+  merchant_category varchar
+  country_code varchar(2)
+}
+
+Table dim_payment_method {
+  payment_method_key int [pk, increment]
+  payment_method_type varchar
+  card_brand varchar
+}
+
+Table dim_currency {
+  currency_key int [pk, increment]
+  currency_code varchar(3)
+  exchange_rate_usd decimal(12,6)
+}
+
+Table dim_location {
+  location_key int [pk, increment]
+  country_code varchar(2)
+  country varchar
+  region varchar
+  city varchar
+}
+
+Table fact_transactions {
+  transaction_key int [pk, increment]
+  transaction_id int
+  date_key int [ref: > dim_date.date_key]
+  customer_key int [ref: > dim_customer.customer_key]
+  merchant_key int [ref: > dim_merchant.merchant_key]
+  payment_method_key int [ref: > dim_payment_method.payment_method_key]
+  currency_key int [ref: > dim_currency.currency_key]
+  location_key int [ref: > dim_location.location_key]
+  amount decimal(12,2)
+  amount_usd decimal(12,2)
+  status varchar
+  fraud_score decimal(5,4)
+  is_refunded boolean
+}
+
+Table agg_daily_revenue {
+  date_key int [ref: > dim_date.date_key]
+  merchant_key int [ref: > dim_merchant.merchant_key]
+  currency_key int [ref: > dim_currency.currency_key]
+  total_amount decimal(14,2)
+  total_amount_usd decimal(14,2)
+  transaction_count int
+}
+
+Table agg_monthly_fraud {
+  month varchar
+  location_key int [ref: > dim_location.location_key]
+  total_flagged int
+  avg_fraud_score decimal(5,4)
+}

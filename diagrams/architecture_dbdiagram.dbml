@@ -1,0 +1,85 @@
+Project stripe_data_architecture {
+  database_type: "Architecture"
+  note: "Architecture globale simplifiee : OLTP, CDC/Kafka, NoSQL, Data Lake, OLAP, BI et ML."
+}
+
+Table stripe_applications {
+  app_id int [pk]
+  name varchar
+  note varchar
+}
+
+Table oltp_database {
+  oltp_id int [pk]
+  system varchar
+  role varchar
+  main_data varchar
+}
+
+Table cdc_debezium {
+  cdc_id int [pk]
+  tool varchar
+  role varchar
+}
+
+Table kafka_streaming {
+  kafka_id int [pk]
+  tool varchar
+  role varchar
+}
+
+Table nosql_store {
+  nosql_id int [pk]
+  system varchar
+  collections varchar
+}
+
+Table data_lake {
+  lake_id int [pk]
+  role varchar
+  data_type varchar
+}
+
+Table olap_warehouse {
+  warehouse_id int [pk]
+  system varchar
+  role varchar
+}
+
+Table airflow_orchestration {
+  airflow_id int [pk]
+  tool varchar
+  role varchar
+}
+
+Table machine_learning {
+  ml_id int [pk]
+  role varchar
+  use_cases varchar
+}
+
+Table bi_reporting {
+  bi_id int [pk]
+  role varchar
+  outputs varchar
+}
+
+Table security_compliance {
+  security_id int [pk]
+  role varchar
+  controls varchar
+}
+
+Ref: stripe_applications.app_id > oltp_database.oltp_id
+Ref: oltp_database.oltp_id > cdc_debezium.cdc_id
+Ref: cdc_debezium.cdc_id > kafka_streaming.kafka_id
+Ref: kafka_streaming.kafka_id > nosql_store.nosql_id
+Ref: kafka_streaming.kafka_id > data_lake.lake_id
+Ref: data_lake.lake_id > olap_warehouse.warehouse_id
+Ref: airflow_orchestration.airflow_id > olap_warehouse.warehouse_id
+Ref: nosql_store.nosql_id > machine_learning.ml_id
+Ref: olap_warehouse.warehouse_id > machine_learning.ml_id
+Ref: olap_warehouse.warehouse_id > bi_reporting.bi_id
+Ref: security_compliance.security_id > oltp_database.oltp_id
+Ref: security_compliance.security_id > nosql_store.nosql_id
+Ref: security_compliance.security_id > olap_warehouse.warehouse_id
