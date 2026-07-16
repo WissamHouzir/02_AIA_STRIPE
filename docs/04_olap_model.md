@@ -2,11 +2,13 @@
 
 ## Objectif
 
-Le modele OLAP sert a analyser les donnees Stripe : revenus, transactions, fraude, remboursements, performances marchands et segmentation client.
+Le modèle OLAP sert à analyser les données Stripe : revenus, transactions, fraude, remboursements, performances marchands et segmentation client.
 
-## Type de schema
+Il répond aux questions métier qui ne doivent pas être exécutées directement sur l'OLTP, afin de ne pas ralentir le traitement des paiements.
 
-Le choix retenu est un **schema en etoile** simple. Il facilite les jointures et les agregations.
+## Type de schéma
+
+Le choix retenu est un **schéma en étoile** simple. Il facilite les jointures et les agrégations.
 
 ## Table de faits principale
 
@@ -18,16 +20,16 @@ Le choix retenu est un **schema en etoile** simple. Il facilite les jointures et
 
 | Dimension | Role |
 |---|---|
-| `dim_date` | Analyse par jour, mois, trimestre, annee |
+| `dim_date` | Analyse par jour, mois, trimestre, année |
 | `dim_customer` | Segment, pays, type de client |
-| `dim_merchant` | Marchand, categorie, pays |
+| `dim_merchant` | Marchand, catégorie, pays |
 | `dim_payment_method` | Type de paiement et marque |
 | `dim_currency` | Devise et taux de conversion |
-| `dim_location` | Pays, region, ville |
+| `dim_location` | Pays, région, ville |
 
-## Tables agregees
+## Tables agrégées
 
-| Table | Utilite |
+| Table | Utilité |
 |---|---|
 | `agg_daily_revenue` | Revenu quotidien par marchand et devise |
 | `agg_monthly_revenue` | Revenu mensuel global |
@@ -37,9 +39,11 @@ Le choix retenu est un **schema en etoile** simple. Il facilite les jointures et
 
 - Partitionnement par date.
 - Index ou clustering par marchand, pays et devise.
-- Vues materialisees pour les rapports frequents.
+- Vues matérialisées pour les rapports fréquents.
 - Conversion des montants en USD pour comparer les devises.
 
-## Synthese
+## Synthèse
 
-L'OLAP n'est pas utilise pour traiter les paiements. Il sert uniquement a analyser les donnees deja collectees, avec un modele simple et rapide a interroger.
+L'OLAP n'est pas utilisé pour traiter les paiements. Il sert uniquement à analyser les données déjà collectées, avec un modèle simple et rapide à interroger.
+
+Cette séparation permet aux équipes métier d'explorer les données sans risquer de perturber les systèmes transactionnels.

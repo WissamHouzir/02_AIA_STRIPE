@@ -2,7 +2,9 @@
 
 ## Objectif
 
-Le pipeline connecte les systemes OLTP, OLAP et NoSQL. Il doit permettre a la fois le temps reel et le batch.
+Le pipeline connecte les systèmes OLTP, OLAP et NoSQL. Il doit permettre à la fois le temps réel et le batch.
+
+Son rôle est de faire circuler la donnée sans créer de dépendance directe entre tous les systèmes. Les paiements restent traités dans l'OLTP, tandis que les analyses, contrôles et modèles ML sont alimentés par des flux dédiés.
 
 ## Architecture simple
 
@@ -10,35 +12,75 @@ Le pipeline connecte les systemes OLTP, OLAP et NoSQL. Il doit permettre a la fo
 OLTP PostgreSQL
   -> CDC Debezium
   -> Kafka
+  -> Schema Registry / Dead Letter Queue
   -> NoSQL MongoDB
   -> Data Lake
+  -> Airflow
+  -> Transformations / Data Quality
   -> OLAP Warehouse
   -> BI / ML / Reporting
 ```
 
-## Flux temps reel
+## Composants nécessaires
 
-| Etape | Description |
+Pour faire fonctionner le pipeline de bout en bout, l'architecture doit inclure :
+
+| Composant | Rôle |
 |---|---|
-| 1 | Une transaction est creee dans l'OLTP |
-| 2 | Debezium capture le changement |
-| 3 | Kafka publie l'evenement |
-| 4 | Le service ML calcule un score de fraude |
-| 5 | Le score est stocke dans NoSQL |
+| PostgreSQL OLTP | Source transactionnelle principale |
+| Debezium CDC | Capture des changements depuis l'OLTP |
+| Kafka | Transport des événements en temps réel |
+| Schema Registry | Versionnement et validation des schémas d'événements |
+| Dead Letter Queue | Stockage des messages invalides ou en erreur |
+| MongoDB NoSQL | Stockage des logs, sessions, feedbacks et scores ML |
+| Data Lake | Stockage brut, historique et rejouable |
+| Airflow Scheduler | Planification des DAGs |
+| Airflow Webserver | Suivi des exécutions et diagnostic |
+| Airflow Workers | Exécution des tâches batch |
+| Airflow Metadata DB | État des DAGs, runs, tâches et retries |
+| Transformations | Nettoyage, jointures, enrichissement et agrégations |
+| Data Quality Checks | Validation des volumes, schémas, doublons et valeurs nulles |
+| OLAP Warehouse | Tables de faits, dimensions, agrégats et vues matérialisées |
+| Monitoring et alerting | Suivi des retards, échecs et performances |
+| Secrets Manager | Gestion des identifiants et clés de connexion |
 
-Ce flux sert surtout a la detection de fraude et aux alertes rapides.
+## Flux temps réel
+
+| Étape | Description |
+|---|---|
+| 1 | Une transaction est créée dans l'OLTP |
+| 2 | Debezium capture le changement |
+| 3 | Kafka publie l'événement |
+| 4 | Le service ML calcule un score de fraude |
+| 5 | Le score est stocké dans NoSQL |
+
+Ce flux sert surtout à la détection de fraude et aux alertes rapides.
 
 ## Flux batch
 
-| Etape | Description |
+| Étape | Description |
 |---|---|
-| 1 | Les donnees brutes sont stockees dans le data lake |
-| 2 | Airflow orchestre les traitements |
-| 3 | Les donnees sont nettoyees et transformees |
-| 4 | Le data warehouse est alimente |
-| 5 | Les agregations sont mises a jour |
+| 1 | Les données brutes sont stockées dans le data lake |
+| 2 | Airflow déclenche les DAGs planifiés |
+| 3 | Les contrôles de qualité vérifient les schémas, doublons et volumes |
+| 4 | Les données sont nettoyées, transformées et enrichies |
+| 5 | Le data warehouse est alimenté |
+| 6 | Les agrégations et vues matérialisées sont mises à jour |
+| 7 | Les datasets ML et rapports BI sont rafraîchis |
 
-Ce flux sert au reporting, aux analyses historiques et a l'entrainement ML.
+Ce flux sert au reporting, aux analyses historiques et à l'entraînement ML.
+
+## Rôle d'Airflow
+
+Airflow pilote les workflows batch sans traiter directement les transactions temps réel. Les DAGs principaux peuvent être :
+
+- `load_oltp_to_lake` pour charger les exports ou snapshots dans le data lake ;
+- `validate_raw_data` pour contrôler les fichiers et événements entrants ;
+- `build_warehouse_dimensions` pour mettre à jour les dimensions OLAP ;
+- `build_fact_transactions` pour construire la table de faits ;
+- `refresh_aggregates` pour mettre à jour les tables agrégées ;
+- `prepare_ml_features` pour préparer les features de fraude et segmentation ;
+- `compliance_reporting` pour produire les exports de conformité.
 
 ## Gestion des erreurs
 
@@ -46,8 +88,12 @@ Ce flux sert au reporting, aux analyses historiques et a l'entrainement ML.
 - Retries automatiques dans Airflow.
 - Deduplication avec `transaction_id`.
 - Monitoring du retard CDC/Kafka.
-- Alertes en cas d'echec de pipeline.
+- Dead Letter Queue pour les événements invalides.
+- Alertes Airflow en cas de tâche échouée ou trop lente.
+- Alertes en cas d'échec de pipeline.
 
-## Synthese
+## Synthèse
 
-Le pipeline garde les systemes synchronises sans faire porter toute la charge a la base transactionnelle.
+Le pipeline garde les systèmes synchronisés sans faire porter toute la charge à la base transactionnelle.
+
+Il apporte aussi une meilleure capacité de reprise : en cas d'échec, les messages peuvent être rejoués et les traitements Airflow relancés.

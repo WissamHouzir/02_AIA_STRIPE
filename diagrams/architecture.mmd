@@ -1,13 +1,88 @@
 flowchart LR
-  apps[Stripe Applications] --> oltp[(OLTP Database)]
-  oltp --> cdc[Change Data Capture]
-  cdc --> kafka[Kafka Streaming Platform]
-  kafka --> nosql[(NoSQL Store)]
-  kafka --> lake[(Data Lake)]
-  kafka --> warehouse[(OLAP Data Warehouse)]
-  lake --> warehouse
-  warehouse --> bi[BI and Reporting]
-  warehouse --> compliance[Compliance Reporting]
-  nosql --> ml[Machine Learning Services]
-  warehouse --> ml
-  ml --> fraud[Real-Time Fraud Detection]
+
+%% =========================
+%% Applications
+%% =========================
+subgraph A["💳 Applications"]
+    apps[Stripe Applications]
+    oltp[(OLTP Database)]
+    apps --> oltp
+end
+
+%% =========================
+%% Ingestion
+%% =========================
+subgraph B["📥 Data Ingestion"]
+    cdc[Change Data Capture]
+    kafka[Kafka Streaming Platform]
+
+    oltp --> cdc
+    cdc --> kafka
+end
+
+%% =========================
+%% Storage
+%% =========================
+subgraph C["🗄️ Data Storage"]
+    nosql[(NoSQL Store)]
+    lake[(Data Lake)]
+    warehouse[(OLAP Data Warehouse)]
+
+    kafka --> nosql
+    kafka --> lake
+end
+
+%% =========================
+%% Batch Processing
+%% =========================
+subgraph D["⚙️ Batch Processing"]
+    airflow[Airflow Batch Orchestration]
+
+    lake --> airflow
+    airflow --> warehouse
+end
+
+%% =========================
+%% Analytics
+%% =========================
+subgraph E["📊 Analytics & Reporting"]
+    bi[BI and Reporting]
+    compliance[Compliance Reporting]
+
+    warehouse --> bi
+    warehouse --> compliance
+end
+
+%% =========================
+%% Machine Learning
+%% =========================
+subgraph F["🤖 Machine Learning"]
+    ml[Machine Learning Services]
+    fraud[Real-Time Fraud Detection]
+
+    nosql --> ml
+    warehouse --> ml
+    ml --> fraud
+end
+
+%% =========================
+%% Security
+%% =========================
+subgraph G["🔒 Security"]
+    security[Security and Monitoring]
+
+    security --> oltp
+    security --> kafka
+    security --> warehouse
+end
+
+%% =========================
+%% Styles
+%% =========================
+style A fill:#F9FAFB,stroke:#4F46E5,stroke-width:2px
+style B fill:#EEF6FF,stroke:#2563EB,stroke-width:2px
+style C fill:#FFF7E6,stroke:#F59E0B,stroke-width:2px
+style D fill:#EAFBF3,stroke:#10B981,stroke-width:2px
+style E fill:#FFF1F2,stroke:#E11D48,stroke-width:2px
+style F fill:#F3F0FF,stroke:#7C3AED,stroke-width:2px
+style G fill:#F3F4F6,stroke:#6B7280,stroke-width:2px

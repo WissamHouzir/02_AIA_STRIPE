@@ -2,43 +2,43 @@
 
 ## Objectif
 
-Stripe manipule des donnees financieres et personnelles. L'architecture doit donc proteger les donnees et respecter les exigences GDPR, PCI-DSS et CCPA.
+Stripe manipule des données financières et personnelles. L'architecture doit donc protéger les données et respecter les exigences GDPR, PCI-DSS et CCPA.
 
 ## Mesures principales
 
 | Risque | Mesure |
 |---|---|
-| Fuite de donnees | Chiffrement au repos et en transit |
-| Acces non autorise | RBAC et MFA |
+| Fuite de données | Chiffrement au repos et en transit |
+| Accès non autorisé | RBAC et MFA |
 | Exposition des cartes | Tokenisation des moyens de paiement |
-| Modification non tracee | Audit logs |
-| Donnees personnelles trop visibles | Masquage ou pseudonymisation |
-| Perte de donnees | Sauvegardes et plan de reprise |
+| Modification non tracée | Audit logs |
+| Données personnelles trop visibles | Masquage ou pseudonymisation |
+| Perte de données | Sauvegardes et plan de reprise |
 
-## Acces aux donnees
+## Accès aux données
 
-- Les analystes accedent surtout a l'OLAP.
-- Les donnees sensibles restent limitees dans l'OLTP.
+- Les analystes accèdent surtout à l'OLAP.
+- Les données sensibles restent limitées dans l'OLTP.
 - Les services techniques utilisent des comptes de service avec droits minimaux.
-- Les acces aux donnees sensibles sont journalises.
+- Les accès aux données sensibles sont journalisés.
 
-## Conformite
+## Conformité
 
 ### GDPR / CCPA
 
-- Minimiser les donnees stockees.
-- Pseudonymiser les donnees personnelles dans l'analytics.
-- Permettre l'export ou la suppression logique des donnees client.
-- Definir des durees de retention.
+- Minimiser les données stockées.
+- Pseudonymiser les données personnelles dans l'analytics.
+- Permettre l'export ou la suppression logique des données client.
+- Définir des durées de rétention.
 
 ### PCI-DSS
 
-- Ne pas stocker les numeros de carte en clair.
+- Ne pas stocker les numéros de carte en clair.
 - Utiliser la tokenisation.
 - Chiffrer les flux sensibles.
 - Conserver des logs d'audit.
-- Controler strictement les acces.
+- Contrôler strictement les accès.
 
-## Synthese
+## Synthèse
 
-La securite doit etre presente dans chaque couche : OLTP, pipeline, NoSQL, OLAP et outils BI.
+La sécurité doit être présente dans chaque couche : OLTP, pipeline, NoSQL, OLAP et outils BI.

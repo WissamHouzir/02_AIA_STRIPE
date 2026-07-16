@@ -2,7 +2,7 @@
 
 ## Objectif
 
-Ces requetes montrent comment repondre a quelques questions metier avec les modeles OLTP, OLAP et NoSQL.
+Ces requêtes montrent comment répondre à quelques questions métier avec les modèles OLTP, OLAP et NoSQL.
 
 ## 1. Revenu mensuel par pays
 
@@ -49,7 +49,7 @@ GROUP BY p.payment_method_type
 ORDER BY refund_rate_pct DESC;
 ```
 
-## 4. Transactions a risque eleve
+## 4. Transactions à risque élevé
 
 ```javascript
 db.fraud_features.find(
@@ -83,6 +83,6 @@ db.sessions.find(
 ).sort({ started_at: -1 }).limit(50)
 ```
 
-## Synthese
+## Synthèse
 
-Les requetes SQL servent surtout aux analyses structurees dans l'OLAP. Les requetes NoSQL servent aux donnees flexibles comme fraude, sessions et logs.
+Les requêtes SQL servent surtout aux analyses structurées dans l'OLAP. Les requêtes NoSQL servent aux données flexibles comme fraude, sessions et logs.
