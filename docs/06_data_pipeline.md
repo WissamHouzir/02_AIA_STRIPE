@@ -51,7 +51,7 @@ Pour faire fonctionner le pipeline de bout en bout, l'architecture doit inclure 
 | 1 | Une transaction est créée dans l'OLTP |
 | 2 | Debezium capture le changement |
 | 3 | Kafka publie l'événement |
-| 4 | Le service ML calcule un score de fraude |
+| 4 | Le service de fraude consomme l'événement Kafka et calcule un score |
 | 5 | Le score est stocké dans NoSQL |
 
 Ce flux sert surtout à la détection de fraude et aux alertes rapides.

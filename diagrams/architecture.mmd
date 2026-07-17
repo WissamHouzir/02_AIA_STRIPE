@@ -60,9 +60,10 @@ subgraph F["🤖 Machine Learning"]
     ml[Machine Learning Services]
     fraud[Real-Time Fraud Detection]
 
+    kafka --> fraud
+    fraud --> nosql
     nosql --> ml
     warehouse --> ml
-    ml --> fraud
 end
 
 %% =========================

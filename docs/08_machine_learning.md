@@ -30,7 +30,7 @@ Le score produit est stocké dans `fraud_features` avec un niveau de risque : `l
 ## Pipeline ML
 
 ```text
-Transactions + sessions + historique
+Événement Kafka + sessions + historique
   -> extraction de features
   -> modèle ML
   -> score de fraude

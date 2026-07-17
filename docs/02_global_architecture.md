@@ -110,8 +110,9 @@ Pour que l'architecture soit exploitable en production, elle doit aussi intégre
 2. Elle est enregistrée dans la base OLTP.
 3. Le CDC capture le changement.
 4. Kafka publie l'événement.
-5. Les services NoSQL, OLAP et ML consomment l'événement.
-6. Le modèle de fraude peut calculer un score rapidement.
+5. Le service de détection de fraude consomme l'événement Kafka en temps réel.
+6. Le modèle calcule un score de risque rapidement.
+7. Le score est stocké dans NoSQL et peut déclencher une alerte.
 
 ## Flux batch
 
